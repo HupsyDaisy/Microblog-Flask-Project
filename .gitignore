@@ -8,3 +8,5 @@ app.db
 *.sqlite3
 .mypy_cache/
 .pytest_cache/
+logs
+migrations

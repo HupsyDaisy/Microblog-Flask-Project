@@ -1,7 +1,6 @@
 # Microblog Project
 
-This repository follows along with [The Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) by Miguel Grinberg.  
-The project is a simple microblog application built step by step, with each chapter introducing new Flask concepts.
+This repository follows along with [The Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) by Miguel Grinberg.  The project is a simple microblog application built step by step, with each chapter introducing new Flask concepts.
 
 ---
 
@@ -11,7 +10,7 @@ The project is a simple microblog application built step by step, with each chap
 - Created a basic Flask application.
 - Defined routes (`/` and `/index`).
 - Rendered dynamic content using templates.
-- Introduced Jinja2 template engine for loops, conditionals, and variables.
+- Jinja2 template engine for loops, conditionals, and variables.
 
 ### Chapter 2: Templates
 - Added a base layout (`base.html`) to avoid repetition in templates.
@@ -28,11 +27,11 @@ The project is a simple microblog application built step by step, with each chap
 
 ### Chapter 4: Database (SQLAlchemy + Migrations)
 
-Added Flask-SQLAlchemy models (User, Post) and relationships.
+- Added Flask-SQLAlchemy models (User, Post) and relationships.
 
-Configured the database (SQLite by default) via SQLALCHEMY_DATABASE_URI.
+- Configured the database (SQLite by default) via SQLALCHEMY_DATABASE_URI.
 
-Introduced Flask-Migrate (Alembic) to version-control schema changes.
+- Flask-Migrate (Alembic) to version-control schema changes.
 
 Typical migration workflow:
 
@@ -42,25 +41,17 @@ flask db migrate -m "Initial tables"
 flask db upgrade     # apply to the database
    ```
 
-Version control tip: commit new migration scripts:
-
-   ```bash
-git add migrations/versions/<revision>.py
-git commit -m "Add migration: <short description>"
-   ```
-The database file (e.g., app.db) should not be committed—see .gitignore below.
-
 ### Chapter 5: User Logins (Flask-Login)
 
-Installed and configured Flask-Login.
+- Installed and configured Flask-Login.
 
-Implemented secure password hashing with werkzeug.security.
+- Implemented secure password hashing with werkzeug.security.
 
-Added login_user() / logout_user() routes and a @login_required decorator on protected pages.
+- Added login_user() / logout_user() routes and a @login_required decorator on protected pages.
 
-Implemented a user_loader so Flask-Login can load users from the DB:
+- Implemented a user_loader so Flask-Login can load users from the DB:
 
-   ```python
+```python
 # app/models.py
 from flask_login import UserMixin
 from app import db, login
@@ -87,7 +78,42 @@ next_page = request.args.get('next')
 if not next_page or urlsplit(next_page).netloc != '':
     next_page = url_for('index')
 return redirect(next_page)
-   ```
+```
+### Chapter 7: Error Handling
+
+- Added custom 404 and 500 error pages.
+
+- Configured logging (e.g., rotating file or email on errors) for production diagnostics.
+
+- Ensured DB session rollback on unhandled exceptions to keep the session clean.
+
+### Chapter 8: Followers
+
+- Implemented a self-referential followers relationship so users can follow/unfollow each other.
+
+- Added routes to follow/unfollow and updated the user profile page to show follower/followed counts.
+
+- Built a personalized feed that shows posts from the current user and people they follow.
+
+- Kept a public Explore page showing all posts (most recent first).
+
+### Chapter 9: Pagination
+
+- Paginated post lists (index & explore) using db.paginate() with SQLAlchemy.
+
+- Added Next / Previous links in templates, and a POSTS_PER_PAGE config setting.
+
+### Chapter 10: Email
+
+- Configured Flask-Mail.
+
+- Implemented the password reset flow.
+
+- Added user token helpers: get_reset_password_token() and verify_reset_password_token().
+
+- Created routes /reset_password_request and /reset_password/<token>, plus email templates (txt/html).
+
+- In development, the reset link can be logged to console instead of sending email; in production, use SMTP. If using blueprints, ensure endpoints are namespaced (e.g., auth.reset_password_request).
 
 ---
 
@@ -102,9 +128,9 @@ cd microblog
 2. Create and activate a virtual environment:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-On Windows: venv\Scripts\activate
+python -m venv venv
+source venv/bin/activate    #linux/macOS
+venv\Scripts\activate       #windows
 ```
 
 3. Install dependencies:
@@ -144,20 +170,26 @@ Open http://localhost:5000
 microblog/
 │
 ├── app/
-│   ├── __init__.py        # App factory / extensions (db, migrate, login)
-│   ├── models.py          # SQLAlchemy models (User, Post)
-│   ├── routes.py          # URL routes (index, login, logout, etc.)
-│   ├── forms.py           # Web forms (Flask-WTF)
-│   └── templates/         # HTML templates
+│   ├── __init__.py        # App factory / extensions 
+│   ├── errors.py          # errors
+│   ├── models.py          # SQLAlchemy models 
+│   ├── routes.py          # Routes 
+│   ├── forms.py           # Web forms 
+│   └── templates/
 │       ├── base.html
 │       ├── index.html
-│       └── login.html
+│       ├── explore.html
+│       ├── user.html
+│       ├── edit_profile.html
+│       ├── _post.html
+│       ├── 404.html
+│       └── 500.html
 │
-├── migrations/            # Alembic migration scripts (commit these!)
+├── migrations/            # Alembic migration scripts 
 ├── microblog.py           # App entry point
 ├── requirements.txt       # Python dependencies
 ├── .flaskenv              # FLASK_APP=microblog.py, etc.
 ├── README.md              # This file
-└── venv/                  # Virtual environment (not committed)
+└── venv/                  # Virtual environment
    ```
 
